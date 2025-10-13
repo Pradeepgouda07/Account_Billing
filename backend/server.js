@@ -35,7 +35,7 @@ app.use("/api/payments", verifyToken, paymentRoutes);
 app.use("/api/invoices", verifyToken, invoiceRoutes);
 
 // Admin-only routes
-app.use("/api/admin", verifyToken, requireRole("admin"), adminRoutes);
+app.use("/api/admin", requireRole(), adminRoutes);
 app.use("/api/reports", verifyToken, requireRole("admin"), reportRoutes);
 
 // Basic test route

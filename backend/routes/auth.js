@@ -2,28 +2,30 @@ const express = require("express");
 const router = express.Router();
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
-
-// Dummy users for demo (replace with DB)
-const users = [
-  { id: 1, username: "admin", passwordHash: bcrypt.hashSync("admin123", 10), role: "admin" },
-  { id: 2, username: "user", passwordHash: bcrypt.hashSync("user123", 10), role: "user" },
-];
+const Admin = require("../models/Admin");
 
 // Login route
 router.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+  const { username, password,role } = req.body;
 
-  const user = users.find((u) => u.username === username);
-  if (!user) return res.status(400).json({ message: "Invalid username or password" });
+const user0 = await Admin.findOne({username:username});
+if (!user0){  
+  res.json({
+    message:"Username already exits"
+  });
+return ;
+} 
 
-  const validPass = await bcrypt.compare(password, user.passwordHash);
+  const validPass = await bcrypt.hash(password, 10);
+  const user = await Admin.create({username:username,password:validPass,role:role})
+ 
   if (!validPass) return res.status(400).json({ message: "Invalid username or password" });
 
   const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, process.env.JWT_SECRET, {
     expiresIn: "1h",
   });
 
-  res.json({ token });
+  res.json({ token:token,message:"Login Successfully" });
 });
 
 module.exports = router;

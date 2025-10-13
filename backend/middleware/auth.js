@@ -13,7 +13,8 @@ const verifyToken = (req, res, next) => {
   }
 };
 
-const requireRole = (role) => (req, res, next) => {
+const requireRole = () => (req, res, next) => {
+  const role= req.body;
   if (!req.user || req.user.role !== role) {
     return res.status(403).json({ message: "Forbidden. You do not have the required role." });
   }
