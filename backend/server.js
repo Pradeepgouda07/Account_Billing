@@ -1,4 +1,5 @@
 require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -10,7 +11,7 @@ const invoiceRoutes = require("./routes/invoices");
 const paymentRoutes = require("./routes/payments");
 const reportRoutes = require("./routes/reports");
 
-const { verifyToken, requireRole } = require("./middleware/auth");
+const {verifyToken, requireRole } = require("./middleware/auth");
 
 const app = express();
 
@@ -35,7 +36,7 @@ app.use("/api/payments", verifyToken, paymentRoutes);
 app.use("/api/invoices", verifyToken, invoiceRoutes);
 
 // Admin-only routes
-app.use("/api/admin", requireRole(), adminRoutes);
+app.use("/api/admin",verifyToken, requireRole("admin"), adminRoutes);
 app.use("/api/reports", verifyToken, requireRole("admin"), reportRoutes);
 
 // Basic test route

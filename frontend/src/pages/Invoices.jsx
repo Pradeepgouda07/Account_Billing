@@ -86,7 +86,7 @@ export default function Invoices() {
           </div>
         ))}
         <button type="button" className="btn btn-secondary me-2" onClick={addLine}>
-          + Line
+          + Add
         </button>
         <button className="btn btn-primary">Create Invoice</button>
       </form>
@@ -121,3 +121,7 @@ export default function Invoices() {
     </div>
   );
 }
+
+
+
+
