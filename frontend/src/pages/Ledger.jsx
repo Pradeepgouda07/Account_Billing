@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE } from "../api";
 
 export default function Ledger() {
   const [entries, setEntries] = useState([]);
@@ -9,12 +10,13 @@ export default function Ledger() {
     const fetchLedger = async () => {
       try {
         const token = localStorage.getItem("token");
-        const res = await axios.get("http://localhost:4000/api/ledger", {
+        const res = await axios.get(`${API_BASE}/ledger`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setEntries(res.data);
+        // Backend may return { entries: [...] } or array directly
+        setEntries(Array.isArray(res.data.entries) ? res.data.entries : res.data || []);
       } catch (err) {
-        console.error("Error fetching ledger:", err);
+        console.error("Error fetching ledger:", err.response?.data || err.message);
       } finally {
         setLoading(false);
       }
@@ -27,10 +29,7 @@ export default function Ledger() {
 
   return (
     <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-blue-700 mb-6">
-        Ledger Entries
-      </h2>
-
+      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Ledger Entries</h2>
       <div className="overflow-x-auto shadow rounded-lg bg-white">
         <table className="min-w-full border border-gray-200">
           <thead className="bg-blue-600 text-white">
@@ -50,17 +49,13 @@ export default function Ledger() {
                 </td>
               </tr>
             ) : (
-              entries.map((entry) => (
-                <tr key={entry._id} className="border-b hover:bg-gray-100">
-                  <td className="px-4 py-2">
-                    {new Date(entry.date).toLocaleDateString()}
-                  </td>
+              entries.map((entry, i) => (
+                <tr key={entry._id || i} className="border-b hover:bg-gray-100">
+                  <td className="px-4 py-2">{new Date(entry.date).toLocaleDateString()}</td>
                   <td className="px-4 py-2">{entry.description}</td>
                   <td className="px-4 py-2">{entry.debitAccount}</td>
                   <td className="px-4 py-2">{entry.creditAccount}</td>
-                  <td className="px-4 py-2 font-medium text-green-600">
-                    ₹{entry.amount}
-                  </td>
+                  <td className="px-4 py-2 font-medium text-green-600">₹{entry.amount}</td>
                 </tr>
               ))
             )}

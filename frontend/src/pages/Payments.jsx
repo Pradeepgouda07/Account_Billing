@@ -6,26 +6,36 @@ export default function Payments() {
   const [list, setList] = useState([]);
   const [form, setForm] = useState({ amount: "", description: "" });
 
-  const fetch = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(`${API_BASE}/payments`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setList(res.data);
+  const fetchPayments = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE}/payments`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setList(res.data || []);
+    } catch (err) {
+      console.error("Error fetching payments:", err.response?.data || err.message);
+    }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    await axios.post(`${API_BASE}/payments`, form, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setForm({ amount: "", description: "" });
-    fetch();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_BASE}/payments`,
+        { ...form, amount: Number(form.amount) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setForm({ amount: "", description: "" });
+      fetchPayments();
+    } catch (err) {
+      console.error("Error adding payment:", err.response?.data || err.message);
+    }
   };
 
   useEffect(() => {
-    fetch();
+    fetchPayments();
   }, []);
 
   return (
@@ -38,6 +48,7 @@ export default function Payments() {
           className="form-control me-2"
           value={form.amount}
           onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          required
         />
         <input
           type="text"
@@ -46,27 +57,38 @@ export default function Payments() {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
-        <button className="btn btn-success">Add</button>
+        <button type="submit" className="btn btn-success">
+          Add
+        </button>
       </form>
       <table className="table">
         <thead>
-          <tr><th>#</th><th>Amount</th><th>Description</th><th>Date</th></tr>
+          <tr>
+            <th>#</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Date</th>
+          </tr>
         </thead>
         <tbody>
-          {list.map((p, i) => (
-            <tr key={p._id}>
-              <td>{i + 1}</td>
-              <td>{p.amount}</td>
-              <td>{p.description}</td>
-              <td>{new Date(p.date).toLocaleDateString()}</td>
+          {Array.isArray(list) && list.length > 0 ? (
+            list.map((p, i) => (
+              <tr key={p._id || i}>
+                <td>{i + 1}</td>
+                <td>{p.amount}</td>
+                <td>{p.description}</td>
+                <td>{new Date(p.date).toLocaleDateString()}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" className="text-center">
+                No payments found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
 }
-
-
-
-

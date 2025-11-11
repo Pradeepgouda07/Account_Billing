@@ -1,100 +1,4 @@
-// // import React from "react";
-// // import { Link } from "react-router-dom";
-// // export default function Sidebar() {
-// //   return (
-// //     <div
-// //       className="bg-light border-end vh-100"
-// //       style={{ width: "200px" }}
-// //     >
-// //       <ul className="list-unstyled p-3">
-// //         <li>
-// //           <Link to="/">Dashboard</Link>
-// //         </li>
-// //         <li>
-// //           <Link to="/expenses">Expenses</Link>
-// //         </li>
-// //         <li>
-// //           <Link to="/payments">Payments</Link>
-// //         </li>
-// //         <li>
-// //           <Link to="/invoices">Invoices</Link>
-// //         </li>
-// //         <li>
-// //           <Link to="/reports">Reports</Link>
-// //         </li>
-// //       </ul>
-// //     </div>
-// //   );
-// // }
 
-
-
-
-
-
-// import React from "react";
-// import { Link, useLocation } from "react-router-dom";
-// import {
-//   FaTachometerAlt,
-//   FaWallet,
-//   FaMoneyBillWave,
-//   FaFileInvoice,
-//   FaChartLine,
-// } from "react-icons/fa";
-
-// export default function Sidebar() {
-//   const location = useLocation();
-
-//   const navItems = [
-//     { name: "Dashboard", path: "/", icon: <FaTachometerAlt /> },
-//     { name: "Expenses", path: "/expenses", icon: <FaWallet /> },
-//     { name: "Payments", path: "/payments", icon: <FaMoneyBillWave /> },
-//     { name: "Invoices", path: "/invoices", icon: <FaFileInvoice /> },
-//     { name: "Reports", path: "/reports", icon: <FaChartLine /> },
-//   ];
-
-//   return (
-//     <div
-//       className="bg-dark text-white border-end vh-100 shadow-sm"
-//       style={{ width: "220px" }}
-//     >
-//       <div className="px-3 py-3 border-bottom border-secondary">
-//         <h4 className="mb-0 fw-bold text-center text-info">Overview</h4>
-//         <p className="text-center text-secondary small mb-0">
-//           Accounting System
-//         </p>
-//       </div>
-
-//       <ul className="list-unstyled p-3 mt-2">
-//         {navItems.map((item) => (
-//           <li key={item.path} className="mb-2">
-//             <Link
-//               to={item.path}
-//               className={`d-flex align-items-center gap-3 px-3 py-2 rounded text-decoration-none ${
-//                 location.pathname === item.path
-//                   ? "bg-info text-dark fw-bold"
-//                   : "text-white hover-opacity"
-//               }`}
-//               style={{
-//                 transition: "all 0.2s ease-in-out",
-//               }}
-//             >
-//               <span className="fs-5">{item.icon}</span>
-//               <span className="fs-6">{item.name}</span>
-//             </Link>
-//           </li>
-//         ))}
-//       </ul>
-
-//       <style>{`
-//         .hover-opacity:hover {
-//           background-color: rgba(255,255,255,0.1);
-//           color: #0dcaf0;
-//         }
-//       `}</style>
-//     </div>
-//   );
-// }
 
 
 
@@ -211,6 +115,8 @@ export default function Sidebar() {
     { name: "Payments", path: "/payments", icon: <FaMoneyBillWave /> },
     { name: "Invoices", path: "/invoices", icon: <FaFileInvoice /> },
     { name: "Ledger", path: "/ledger", icon: <FaBook /> },
+    { name: "Reports", path: "/reports", icon: <FaChartLine /> },
+  
   ];
 
   const adminOnlyItems = [

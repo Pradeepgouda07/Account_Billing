@@ -11,6 +11,7 @@ const invoiceRoutes = require("./routes/invoices");
 const paymentRoutes = require("./routes/payments");
 const reportRoutes = require("./routes/reports");
 
+
 const {verifyToken, requireRole } = require("./middleware/auth");
 
 const app = express();
@@ -21,7 +22,7 @@ app.use(express.json());
 // Connect MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected"))
+  .then(() => console.log("✅ MongoDB connected successfully"))
   .catch((err) => {
     console.error("Mongo error:", err);
     process.exit(1); // stop app if DB connection fails

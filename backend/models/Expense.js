@@ -1,12 +1,12 @@
 const mongoose = require("mongoose");
 
 const ExpenseSchema = new mongoose.Schema({
-  category: String,
-  amount: Number,
+  title: { type: String, required: true },
+  amount: { type: Number, required: true },
+  category: { type: String },
+  description: { type: String },
   date: { type: Date, default: Date.now },
-  description: String,
-  recordedBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
-  ledgerEntry: { type: mongoose.Schema.Types.ObjectId, ref: "Ledger" }
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 
 module.exports = mongoose.model("Expense", ExpenseSchema);

@@ -1,0 +1,76 @@
+.navbar-custom {
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(90deg, #1aead9ff, #1fbae4ff);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.navbar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-brand {
+  font-weight: bold;
+  color: #fff;
+  font-size: 1.25rem;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.welcome-text {
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.user-icon-wrapper {
+  position: relative;
+  cursor: pointer;
+}
+
+.user-icon {
+  color: #fff;
+  font-size: 1.6rem;
+  transition: transform 0.2s;
+}
+
+.user-icon-wrapper:hover .user-icon {
+  transform: scale(1.2);
+}
+
+.user-dropdown {
+  position: absolute;
+  right: 0;
+  top: 110%;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(10px);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+}
+
+.user-dropdown button {
+  padding: 10px 15px;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: 500;
+}
+
+.user-dropdown button:hover {
+  background: #1fbae4;
+  color: #fff;
+}

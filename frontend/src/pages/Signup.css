@@ -1,0 +1,94 @@
+/* Full page gradient background */
+.signup-page {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Glassmorphism card */
+.signup-card {
+  background: rgba(73, 4, 236, 0.1);
+  backdrop-filter: blur(15px);
+  border-radius: 20px;
+  padding: 40px 30px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.25);
+  color: #e012a3;
+  text-align: center;
+}
+
+/* Title and subtitle */
+.signup-title {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.signup-subtitle {
+  font-size: 0.9rem;
+  color: #5e0909;
+  font-weight: 700;
+  margin-bottom: 25px;
+}
+
+/* Input fields */
+.signup-input {
+  width: 100%;
+  padding: 12px 15px;
+  margin-bottom: 20px;
+  border-radius: 12px;
+  border: none;
+  outline: none;
+  font-size: 1rem;
+  background: rgba(255,255,255,0.2);
+  color: #101111;
+  transition: 0.3s;
+}
+
+.signup-input::placeholder {
+  color: #d90c0c;
+}
+
+.signup-input:focus {
+  background: rgba(119, 69, 69, 0.3);
+}
+
+/* Signup button */
+.signup-btn {
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  font-size: 1rem;
+  font-weight: bold;
+  background: linear-gradient(90deg, #ff512f, #dd2476);
+  color: #fff;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.signup-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+}
+
+/* Footer */
+.signup-footer {
+  margin-top: 20px;
+  font-size: 0.9rem;
+}
+
+.login-btn {
+  background: rgb(117, 117, 181);
+  border: none;
+  color: #ebe9f2;
+  font-weight: bold;
+  font-weight: 600;
+  cursor: pointer;
+  margin-left: 5px;
+  margin-top: 20px;
+}
+

@@ -98,25 +98,27 @@ export default function Invoices() {
           </tr>
         </thead>
         <tbody>
-          {list.map((inv, i) => (
-            <tr key={inv._id}>
-              <td>{i + 1}</td>
-              <td>{inv.totalAmount}</td>
-              <td>{inv.status}</td>
-              <td>{new Date(inv.dueDate).toLocaleDateString()}</td>
-              <td>
-                <a
-                  href={`${API_BASE}/invoices/${inv._id}/pdf`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-sm btn-outline-secondary"
-                >
-                  PDF
-                </a>
-              </td>
-            </tr>
-          ))}
-        </tbody>
+      {Array.isArray(list) &&
+        list.map((inv, i) => (
+      <tr key={inv._id || i}>
+         <td>{i + 1}</td>
+         <td>{inv.totalAmount}</td>
+         <td>{inv.status}</td>
+         <td>{new Date(inv.dueDate).toLocaleDateString()}</td>
+         <td>
+          <a
+            href={`${API_BASE}/invoices/${inv._id}/pdf`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn btn-sm btn-outline-secondary"
+          >
+            PDF
+          </a>
+        </td>
+      </tr>
+    ))}
+</tbody>
+
       </table>
     </div>
   );

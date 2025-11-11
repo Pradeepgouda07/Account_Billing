@@ -6,26 +6,36 @@ export default function Expenses() {
   const [list, setList] = useState([]);
   const [form, setForm] = useState({ category: "", amount: "", description: "" });
 
-  const fetch = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(`${API_BASE}/expenses`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setList(res.data);
+  const fetchExpenses = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const res = await axios.get(`${API_BASE}/expenses`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setList(res.data.expenses || res.data || []);
+    } catch (err) {
+      console.error("Error fetching expenses:", err.response?.data || err.message);
+    }
   };
 
   const handleAdd = async (e) => {
     e.preventDefault();
-    const token = localStorage.getItem("token");
-    await axios.post(`${API_BASE}/expenses`, form, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setForm({ category: "", amount: "", description: "" });
-    fetch();
+    try {
+      const token = localStorage.getItem("token");
+      await axios.post(
+        `${API_BASE}/expenses`,
+        { ...form, amount: Number(form.amount) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setForm({ category: "", amount: "", description: "" });
+      fetchExpenses();
+    } catch (err) {
+      console.error("Error adding expense:", err.response?.data || err.message);
+    }
   };
 
   useEffect(() => {
-    fetch();
+    fetchExpenses();
   }, []);
 
   return (
@@ -38,6 +48,7 @@ export default function Expenses() {
           className="form-control me-2"
           value={form.category}
           onChange={(e) => setForm({ ...form, category: e.target.value })}
+          required
         />
         <input
           type="number"
@@ -45,6 +56,7 @@ export default function Expenses() {
           className="form-control me-2"
           value={form.amount}
           onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          required
         />
         <input
           type="text"
@@ -53,31 +65,41 @@ export default function Expenses() {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
-        <button className="btn btn-success">Add</button>
+        <button type="submit" className="btn btn-success">
+          Add
+        </button>
       </form>
+
       <table className="table">
         <thead>
           <tr>
-            <th>#</th><th>Category</th><th>Amount</th><th>Description</th><th>Date</th>
+            <th>#</th>
+            <th>Category</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Date</th>
           </tr>
         </thead>
         <tbody>
-          {list.map((ex, i) => (
-            <tr key={ex._id}>
-              <td>{i + 1}</td>
-              <td>{ex.category}</td>
-              <td>{ex.amount}</td>
-              <td>{ex.description}</td>
-              <td>{new Date(ex.date).toLocaleDateString()}</td>
+          {Array.isArray(list) && list.length > 0 ? (
+            list.map((ex, i) => (
+              <tr key={ex._id || i}>
+                <td>{i + 1}</td>
+                <td>{ex.category}</td>
+                <td>{ex.amount}</td>
+                <td>{ex.description}</td>
+                <td>{ex.date ? new Date(ex.date).toLocaleDateString() : "-"}</td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="5" className="text-center">
+                No expenses found
+              </td>
             </tr>
-          ))}
+          )}
         </tbody>
       </table>
     </div>
   );
 }
-
-
-
-
-
