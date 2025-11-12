@@ -10,6 +10,8 @@ const expenseRoutes = require("./routes/expenses");
 const invoiceRoutes = require("./routes/invoices");
 const paymentRoutes = require("./routes/payments");
 const reportRoutes = require("./routes/reports");
+const ledgerRoutes = require("./routes/ledgers");
+const dashboardRoutes = require("./routes/dashboard");
 
 
 const {verifyToken, requireRole } = require("./middleware/auth");
@@ -35,6 +37,9 @@ app.use("/api/auth", authRoutes);
 app.use("/api/expenses", verifyToken, expenseRoutes);
 app.use("/api/payments", verifyToken, paymentRoutes);
 app.use("/api/invoices", verifyToken, invoiceRoutes);
+app.use("/api/ledger", verifyToken, ledgerRoutes);
+app.use("/api/dashboard", dashboardRoutes);
+
 
 // Admin-only routes
 app.use("/api/admin",verifyToken, requireRole("admin"), adminRoutes);

@@ -1,12 +1,10 @@
 const mongoose = require("mongoose");
 
 const PaymentSchema = new mongoose.Schema({
-  amount: Number,
+  amount: { type: Number, required: true },
+  description: { type: String },
   date: { type: Date, default: Date.now },
-  description: String,
-  paidBy: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" },
-  supplier: { type: mongoose.Schema.Types.ObjectId, ref: "Admin" }, // or separate Supplier model
-  ledgerEntry: { type: mongoose.Schema.Types.ObjectId, ref: "Ledger" }
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
 });
 
 module.exports = mongoose.model("Payment", PaymentSchema);

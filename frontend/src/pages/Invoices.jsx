@@ -3,127 +3,130 @@ import axios from "axios";
 import { API_BASE } from "../api";
 
 export default function Invoices() {
-  const [list, setList] = useState([]);
-  const [invForm, setInvForm] = useState({
-    supplierId: "",
-    dueDate: "",
-    lines: [{ description: "", qty: 1, unitPrice: 0 }]
-  });
+  const [invoices, setInvoices] = useState([]);
+  const [form, setForm] = useState({ clientName: "", amount: "", description: "" });
+  const token = localStorage.getItem("token");
 
-  const fetch = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(`${API_BASE}/invoices`, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setList(res.data);
-  };
-
-  const addLine = () => {
-    setInvForm({
-      ...invForm,
-      lines: [...invForm.lines, { description: "", qty: 1, unitPrice: 0 }]
-    });
-  };
-
-  const handleLineChange = (idx, field, val) => {
-    const newLines = [...invForm.lines];
-    newLines[idx][field] = val;
-    setInvForm({ ...invForm, lines: newLines });
-  };
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    await axios.post(`${API_BASE}/invoices`, invForm, {
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    setInvForm({
-      supplierId: "",
-      dueDate: "",
-      lines: [{ description: "", qty: 1, unitPrice: 0 }]
-    });
-    fetch();
+  // Fetch invoices
+  const fetchInvoices = async () => {
+    try {
+      const res = await axios.get(`${API_BASE}/invoices`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setInvoices(res.data || []);
+    } catch (err) {
+      console.error("Error fetching invoices:", err);
+      alert("Failed to load invoices");
+    }
   };
 
   useEffect(() => {
-    fetch();
+    fetchInvoices();
   }, []);
 
+  // Add invoice
+  const handleAdd = async (e) => {
+    e.preventDefault();
+    try {
+      await axios.post(
+        `${API_BASE}/invoices`,
+        { ...form, amount: Number(form.amount) },
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setForm({ clientName: "", amount: "", description: "" });
+      fetchInvoices();
+    } catch (err) {
+      console.error("Error adding invoice:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "Failed to add invoice");
+    }
+  };
+
+  // Delete invoice
+  const handleDelete = async (id) => {
+    if (!window.confirm("Are you sure you want to delete this invoice?")) return;
+    try {
+      await axios.delete(`${API_BASE}/invoices/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      setInvoices((prev) => prev.filter((inv) => inv._id !== id));
+    } catch (err) {
+      console.error("Error deleting invoice:", err.response?.data || err.message);
+      alert(err.response?.data?.error || "Failed to delete invoice");
+    }
+  };
+
   return (
-    <div>
-      <h2>Invoices</h2>
-      <form className="mb-3" onSubmit={handleSubmit}>
-        <div className="mb-2">
-          <input
-            className="form-control"
-            type="date"
-            value={invForm.dueDate}
-            onChange={(e) => setInvForm({ ...invForm, dueDate: e.target.value })}
-          />
-        </div>
-        {invForm.lines.map((ln, idx) => (
-          <div key={idx} className="d-flex mb-2">
-            <input
-              className="form-control me-2"
-              placeholder="Desc"
-              value={ln.description}
-              onChange={(e) => handleLineChange(idx, "description", e.target.value)}
-            />
-            <input
-              className="form-control me-2"
-              type="number"
-              placeholder="Qty"
-              value={ln.qty}
-              onChange={(e) => handleLineChange(idx, "qty", e.target.value)}
-            />
-            <input
-              className="form-control me-2"
-              type="number"
-              placeholder="Unit Price"
-              value={ln.unitPrice}
-              onChange={(e) => handleLineChange(idx, "unitPrice", e.target.value)}
-            />
-          </div>
-        ))}
-        <button type="button" className="btn btn-secondary me-2" onClick={addLine}>
-          + Add
+    <div style={{ padding: "20px", maxWidth: "900px", margin: "auto" }}>
+      <h2 style={{ marginBottom: "20px" }}>Invoices</h2>
+
+      <form onSubmit={handleAdd} className="d-flex mb-3">
+        <input
+          type="text"
+          placeholder="Client Name"
+          value={form.clientName}
+          onChange={(e) => setForm({ ...form, clientName: e.target.value })}
+          required
+          className="form-control me-2"
+        />
+        <input
+          type="number"
+          placeholder="Amount"
+          value={form.amount}
+          onChange={(e) => setForm({ ...form, amount: e.target.value })}
+          required
+          className="form-control me-2"
+        />
+        <input
+          type="text"
+          placeholder="Description"
+          value={form.description}
+          onChange={(e) => setForm({ ...form, description: e.target.value })}
+          className="form-control me-2"
+        />
+        <button type="submit" className="btn btn-success">
+          Add
         </button>
-        <button className="btn btn-primary">Create Invoice</button>
       </form>
 
       <table className="table">
         <thead>
           <tr>
-            <th>#</th><th>Total</th><th>Status</th><th>Due Date</th><th>PDF</th>
+            <th>#</th>
+            <th>Client</th>
+            <th>Amount</th>
+            <th>Description</th>
+            <th>Date</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-      {Array.isArray(list) &&
-        list.map((inv, i) => (
-      <tr key={inv._id || i}>
-         <td>{i + 1}</td>
-         <td>{inv.totalAmount}</td>
-         <td>{inv.status}</td>
-         <td>{new Date(inv.dueDate).toLocaleDateString()}</td>
-         <td>
-          <a
-            href={`${API_BASE}/invoices/${inv._id}/pdf`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn btn-sm btn-outline-secondary"
-          >
-            PDF
-          </a>
-        </td>
-      </tr>
-    ))}
-</tbody>
-
+          {invoices.length === 0 ? (
+            <tr>
+              <td colSpan="6" className="text-center">
+                No invoices found
+              </td>
+            </tr>
+          ) : (
+            invoices.map((inv, i) => (
+              <tr key={inv._id}>
+                <td>{i + 1}</td>
+                <td>{inv.clientName}</td>
+                <td>{inv.amount}</td>
+                <td>{inv.description || "-"}</td>
+                <td>{new Date(inv.date).toLocaleDateString()}</td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(inv._id)}
+                  >
+                    Delete
+                  </button>
+                </td>
+              </tr>
+            ))
+          )}
+        </tbody>
       </table>
     </div>
   );
 }
-
-
-
-

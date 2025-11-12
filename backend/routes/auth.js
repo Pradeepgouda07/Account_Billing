@@ -7,27 +7,47 @@ const Admin = require("../models/Admin");
 
 // Signup route
 router.post("/signup", async (req, res) => {
-  const { username, password, adminKey } = req.body;
+  const { username, name, email, password, adminKey } = req.body;
 
-  const existingUser = await Admin.findOne({ username: username });
+  if (!password) {
+    return res.status(400).json({ message: "Password is required" });
+  }
+
+  const normalizedUsername = (username || name || "").trim();
+  if (!normalizedUsername) {
+    return res.status(400).json({ message: "Username is required" });
+  }
+
+  const existingUser = await Admin.findOne({ username: normalizedUsername });
   if (existingUser) {
     return res.status(400).json({ message: "Username already exists" });
   }
 
+  const normalizedEmail = email?.trim();
+  if (normalizedEmail) {
+    const existingEmail = await Admin.findOne({ email: normalizedEmail });
+    if (existingEmail) {
+      return res.status(400).json({ message: "Email already exists" });
+    }
+  }
+
   let role = "user";
-  if (adminKey && adminKey === process.env.AdminKey) {
-    role = "admin";
-  } else {
-    return res
-      .status(401)
-      .json({ message: "Invalid Admin Key, Registration denied" });
+  if (adminKey) {
+    if (adminKey === process.env.AdminKey) {
+      role = "admin";
+    } else {
+      return res
+        .status(401)
+        .json({ message: "Invalid Admin Key, Registration denied" });
+    }
   }
 
   const hashedPassword = await bcrypt.hash(password, 10);
   const user = await Admin.create({
-    username: username,
+    username: normalizedUsername,
     passwordHash: hashedPassword,
     role: role,
+    email: normalizedEmail || undefined,
   });
 
   const token = jwt.sign(

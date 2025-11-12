@@ -1,38 +1,44 @@
-const express = require("express");
-const router = express.Router();
-const { verifyToken } = require("../middleware/auth"); // your JWT or session middleware
-const Ledger = require("../models/Ledger"); // assuming you have a Mongoose model
+const router = require("express").Router();
+const Ledger = require("../models/Ledger");
+const { verifyToken } = require("../middleware/auth");
 
-// ✅ GET /api/ledger — get all ledger entries (protected)
+// GET all ledger entries for logged-in user
 router.get("/", verifyToken, async (req, res) => {
   try {
-    const ledgerEntries = await Ledger.find().sort({ date: -1 });
-    res.json(ledgerEntries);
+    const userId = req.user.id;
+    const entries = await Ledger.find({ user: userId }).sort({ date: 1 });
+    res.json(entries);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Ledger fetch error:", err);
+    res.status(500).json({ message: "Failed to fetch ledger entries" });
   }
 });
 
-// ✅ POST /api/ledger — add a new ledger entry (protected)
+// POST a new ledger entry
 router.post("/", verifyToken, async (req, res) => {
   try {
-    const { type, amount, description } = req.body;
+    const { date, description, debit = 0, credit = 0 } = req.body;
+    const userId = req.user.id;
 
-    if (!type || !amount) {
-      return res.status(400).json({ error: "Type and amount are required." });
-    }
+    // Compute new balance (optional: you can sum all previous entries)
+    const lastEntry = await Ledger.findOne({ user: userId }).sort({ date: -1 });
+    const previousBalance = lastEntry?.balance || 0;
+    const newBalance = previousBalance - debit + credit;
 
-    const newEntry = new Ledger({
-      type, // e.g., "credit" or "debit"
-      amount,
+    const entry = new Ledger({
+      user: userId,
+      date,
       description,
-      userId: req.user.id, // if verifyToken attaches user info
+      debit,
+      credit,
+      balance: newBalance
     });
 
-    await newEntry.save();
-    res.status(201).json(newEntry);
+    await entry.save();
+    res.status(201).json(entry);
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.error("Ledger save error:", err);
+    res.status(500).json({ message: "Failed to add ledger entry" });
   }
 });
 

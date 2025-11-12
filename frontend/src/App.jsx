@@ -9,6 +9,7 @@ import Expenses from "./pages/Expenses";
 import Payments from "./pages/Payments";
 import Invoices from "./pages/Invoices";
 import Reports from "./pages/Reports";
+import Ledger from "./pages/Ledger"; // Ledger page import
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
@@ -26,6 +27,7 @@ function App() {
             <Routes>
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignUp />} />
+
               <Route
                 path="/"
                 element={
@@ -59,6 +61,14 @@ function App() {
                 }
               />
               <Route
+                path="/ledger"       // ← Ledger route added
+                element={
+                  <PrivateRoute>
+                    <Ledger />
+                  </PrivateRoute>
+                }
+              />
+              <Route
                 path="/reports"
                 element={
                   <PrivateRoute>
@@ -73,4 +83,5 @@ function App() {
     </Router>
   );
 }
+
 export default App;

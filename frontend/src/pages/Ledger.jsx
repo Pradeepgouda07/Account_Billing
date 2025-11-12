@@ -1,67 +1,74 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import { API_BASE } from "../api";
 
 export default function Ledger() {
   const [entries, setEntries] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  // Fetch ledger entries from backend
+  const fetchLedger = async () => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem("token"); // if using auth
+      const res = await axios.get("http://localhost:4000/api/ledger", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setEntries(res.data);
+    } catch (err) {
+      console.error("Error fetching ledger:", err);
+      setError(err.response?.data?.error || "Failed to fetch ledger");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLedger = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        const res = await axios.get(`${API_BASE}/ledger`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        // Backend may return { entries: [...] } or array directly
-        setEntries(Array.isArray(res.data.entries) ? res.data.entries : res.data || []);
-      } catch (err) {
-        console.error("Error fetching ledger:", err.response?.data || err.message);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLedger();
   }, []);
 
-  if (loading) return <div className="p-6 text-gray-600">Loading ledger...</div>;
-
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <h2 className="text-2xl font-semibold text-blue-700 mb-6">Ledger Entries</h2>
-      <div className="overflow-x-auto shadow rounded-lg bg-white">
-        <table className="min-w-full border border-gray-200">
-          <thead className="bg-blue-600 text-white">
+    <div className="container mt-4">
+      <h3>Ledger</h3>
+      {loading && <p>Loading ledger entries...</p>}
+      {error && <p className="text-danger">{error}</p>}
+
+      {!loading && !error && (
+        <table className="table table-striped table-bordered mt-3">
+          <thead className="table-dark">
             <tr>
-              <th className="px-4 py-2 text-left">Date</th>
-              <th className="px-4 py-2 text-left">Description</th>
-              <th className="px-4 py-2 text-left">Debit Account</th>
-              <th className="px-4 py-2 text-left">Credit Account</th>
-              <th className="px-4 py-2 text-left">Amount</th>
+              <th>ID</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Debit</th>
+              <th>Credit</th>
+              <th>Balance</th>
             </tr>
           </thead>
           <tbody>
             {entries.length === 0 ? (
               <tr>
-                <td colSpan="5" className="p-4 text-center text-gray-500">
+                <td colSpan="6" className="text-center">
                   No ledger entries found.
                 </td>
               </tr>
             ) : (
-              entries.map((entry, i) => (
-                <tr key={entry._id || i} className="border-b hover:bg-gray-100">
-                  <td className="px-4 py-2">{new Date(entry.date).toLocaleDateString()}</td>
-                  <td className="px-4 py-2">{entry.description}</td>
-                  <td className="px-4 py-2">{entry.debitAccount}</td>
-                  <td className="px-4 py-2">{entry.creditAccount}</td>
-                  <td className="px-4 py-2 font-medium text-green-600">₹{entry.amount}</td>
+              entries.map((entry) => (
+                <tr key={entry._id || entry.id}>
+                  <td>{entry._id || entry.id}</td>
+                  <td>{new Date(entry.date).toLocaleDateString()}</td>
+                  <td>{entry.description}</td>
+                  <td>{entry.debit || 0}</td>
+                  <td>{entry.credit || 0}</td>
+                  <td>{entry.balance || 0}</td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
-      </div>
+      )}
     </div>
   );
 }

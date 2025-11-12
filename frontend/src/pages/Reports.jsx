@@ -2,61 +2,79 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../api";
 
-export default function Reports() {
+export default function Reports() {   // ✅ must be a default export
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
   const [report, setReport] = useState(null);
-  const [monthYear, setMonthYear] = useState({ month: "", year: "" });
+  const token = localStorage.getItem("token");
 
-  const fetch = async () => {
-    const token = localStorage.getItem("token");
-    const res = await axios.get(
-      `${API_BASE}/reports/monthly?month=${monthYear.month}&year=${monthYear.year}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-    setReport(res.data);
+  const fetchReport = async () => {
+    if (!month || !year) {
+      alert("Please select month and year");
+      return;
+    }
+
+    try {
+      const res = await axios.get(
+        `${API_BASE}/reports/monthly?month=${month}&year=${year}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      setReport(res.data);
+    } catch (err) {
+      console.error("Error fetching report:", err);
+      alert("Failed to load report");
+    }
   };
 
   return (
-    <div>
+    <div style={{ padding: "20px", maxWidth: "800px", margin: "auto" }}>
       <h2>Monthly Report</h2>
-      <div className="mb-3 d-flex">
+
+      <div style={{ marginBottom: "20px" }}>
         <input
           type="number"
           placeholder="Month (1-12)"
-          className="form-control me-2"
-          value={monthYear.month}
-          onChange={(e) => setMonthYear({ ...monthYear, month: e.target.value })}
+          value={month}
+          onChange={(e) => setMonth(e.target.value)}
+          style={{ marginRight: "10px" }}
         />
         <input
           type="number"
           placeholder="Year (e.g. 2025)"
-          className="form-control me-2"
-          value={monthYear.year}
-          onChange={(e) => setMonthYear({ ...monthYear, year: e.target.value })}
+          value={year}
+          onChange={(e) => setYear(e.target.value)}
+          style={{ marginRight: "10px" }}
         />
-        <button className="btn btn-primary" onClick={fetch}>
+        <button onClick={fetchReport} className="btn btn-primary">
           Generate
         </button>
       </div>
+
       {report && (
         <div>
-          <p>
-            <strong>Revenue:</strong> ₹{report.revenue.toFixed(2)}
-          </p>
-          <p>
-            <strong>Expenses:</strong> ₹{report.expense.toFixed(2)}
-          </p>
-          <p>
-            <strong>Profit:</strong> ₹{report.profit.toFixed(2)}
-          </p>
+          <h4>Report for {month}/{year}</h4>
+          <table className="table">
+            <tbody>
+              <tr>
+                <td><strong>Total Invoices</strong></td>
+                <td>{report.totalInvoices}</td>
+              </tr>
+              <tr>
+                <td><strong>Total Payments</strong></td>
+                <td>{report.totalPayments}</td>
+              </tr>
+              <tr>
+                <td><strong>Total Expenses</strong></td>
+                <td>{report.totalExpenses}</td>
+              </tr>
+              <tr>
+                <td><strong>Net Income</strong></td>
+                <td>{report.netIncome}</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       )}
     </div>
   );
 }
-
-
-
-
-
-
-
