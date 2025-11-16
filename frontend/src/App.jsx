@@ -10,10 +10,19 @@ import Payments from "./pages/Payments";
 import Invoices from "./pages/Invoices";
 import Reports from "./pages/Reports";
 import Ledger from "./pages/Ledger"; // Ledger page import
+import Admin from "./pages/Admin";
 
 function PrivateRoute({ children }) {
   const token = localStorage.getItem("token");
   return token ? children : <Navigate to="/login" />;
+}
+
+function AdminRoute({ children }) {
+  const token = localStorage.getItem("token");
+  const role = localStorage.getItem("role");
+  if (!token) return <Navigate to="/login" />;
+  if (role !== "admin") return <Navigate to="/" />;
+  return children;
 }
 
 function App() {
@@ -74,6 +83,14 @@ function App() {
                   <PrivateRoute>
                     <Reports />
                   </PrivateRoute>
+                }
+              />
+              <Route
+                path="/admin"
+                element={
+                  <AdminRoute>
+                    <Admin />
+                  </AdminRoute>
                 }
               />
             </Routes>

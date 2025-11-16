@@ -30,7 +30,6 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ message: "Email already exists" });
     }
   }
-
   let role = "user";
   if (adminKey) {
     if (adminKey === process.env.AdminKey) {
@@ -77,7 +76,7 @@ router.post("/login", async (req, res) => {
   const token = jwt.sign(
     { id: user._id, username: user.username, role: user.role },
     process.env.JWT_SECRET,
-    { expiresIn: "7d" }
+    { expiresIn: "100d" }
   );
 
   res.json({ token: token, message: "Login Successful", role: user.role });

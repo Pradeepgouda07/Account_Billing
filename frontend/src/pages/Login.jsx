@@ -5,7 +5,7 @@ import { API_BASE } from "../api";
 import "./Login.css";
 
 export default function Login() {
-  const [form, setForm] = useState({ email: "", password: "" });
+  const [form, setForm] = useState({ username: "", password: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -13,12 +13,16 @@ export default function Login() {
     try {
       const res = await axios.post(`${API_BASE}/auth/login`, form);
       localStorage.setItem("token", res.data.token);
+      // Store role for role-based access control
+      if (res.data.role) {
+        localStorage.setItem("role", res.data.role);
+      }
       navigate("/");
     } catch (err) {
-      alert("Login failed");
+      const errorMsg = err.response?.data?.message || "Login failed";
+      alert(errorMsg);
     }
   };
-
   return (
     <div className="login-page">
       <div className="login-card">
@@ -26,11 +30,11 @@ export default function Login() {
         <p className="login-subtitle">Please login to continue</p>
         <form onSubmit={handleSubmit}>
           <input
-            type="email"
-            placeholder="Email"
+            type="text"
+            placeholder="Username"
             className="login-input"
-            value={form.email}
-            onChange={(e) => setForm({ ...form, email: e.target.value })}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
             required
           />
           <input
@@ -58,3 +62,4 @@ export default function Login() {
     </div>
   );
 }
+

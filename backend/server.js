@@ -39,11 +39,10 @@ app.use("/api/payments", verifyToken, paymentRoutes);
 app.use("/api/invoices", verifyToken, invoiceRoutes);
 app.use("/api/ledger", verifyToken, ledgerRoutes);
 app.use("/api/dashboard", dashboardRoutes);
-
+app.use("/api/reports", verifyToken, reportRoutes); // All authenticated users can access their own reports
 
 // Admin-only routes
-app.use("/api/admin",verifyToken, requireRole("admin"), adminRoutes);
-app.use("/api/reports", verifyToken, requireRole("admin"), reportRoutes);
+app.use("/api/admin", verifyToken, requireRole("admin"), adminRoutes);
 
 // Basic test route
 app.get("/", (req, res) => {

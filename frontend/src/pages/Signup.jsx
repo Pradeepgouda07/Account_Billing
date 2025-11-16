@@ -5,7 +5,7 @@ import { API_BASE } from "../api";
 import "./Signup.css";
 
 export default function Signup() {
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const [form, setForm] = useState({ username: "", email: "", password: "", adminKey: "" });
   const [error, setError] = useState("");
   const navigate = useNavigate();
 
@@ -13,9 +13,23 @@ export default function Signup() {
     e.preventDefault();
     setError("");
     try {
-      const res = await axios.post(`${API_BASE}/auth/signup`, form);
+      const payload = {
+        username: form.username,
+        email: form.email,
+        password: form.password,
+      };
+      // Only include adminKey if provided
+      if (form.adminKey) {
+        payload.adminKey = form.adminKey;
+      }
+      
+      const res = await axios.post(`${API_BASE}/auth/signup`, payload);
       localStorage.setItem("token", res.data.token);
-      navigate("/"); // ✅ use navigate instead of window.location.href
+      // Store role for role-based access control
+      if (res.data.user?.role) {
+        localStorage.setItem("role", res.data.user.role);
+      }
+      navigate("/");
     } catch (err) {
       setError(err.response?.data?.message || "Signup failed");
     }
@@ -29,19 +43,18 @@ export default function Signup() {
         <form onSubmit={handleSubmit}>
           <input
             type="text"
-            placeholder="Name"
+            placeholder="Username"
             className="signup-input"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
             required
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder="Email (Optional)"
             className="signup-input"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            required
           />
           <input
             type="password"
@@ -50,6 +63,13 @@ export default function Signup() {
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
             required
+          />
+          <input
+            type="password"
+            placeholder="Admin Key (Optional - for admin access)"
+            className="signup-input"
+            value={form.adminKey}
+            onChange={(e) => setForm({ ...form, adminKey: e.target.value })}
           />
           {error && <div className="alert alert-danger">{error}</div>}
           <button type="submit" className="signup-btn">

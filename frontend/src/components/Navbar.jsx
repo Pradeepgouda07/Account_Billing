@@ -6,7 +6,7 @@ export default function Navbar() {
     <nav
       className="navbar navbar-expand-lg shadow-sm"
       style={{
-        background: "linear-gradient(90deg, #1aead9ff, #1fbae4ff)",
+        background: "linear-gradient(90deg, #1aead9ff, #022d38ff)",
         padding: "0.75rem 1.5rem",
       }}
     >
@@ -18,7 +18,7 @@ export default function Navbar() {
 
         {/* Right Side */}
         <div className="d-flex align-items-center">
-          <span className="text-white me-3 small">Welcome, Admin</span>
+          <span className="text-white me-3 small">Welcome</span>
           <FaUserCircle className="text-white fs-4" />
         </div>
       </div>

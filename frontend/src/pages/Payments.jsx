@@ -194,7 +194,7 @@ export default function Payments() {
     <div>
       <h2>Payments</h2>
 
-      <form onSubmit={handleAdd} className="d-flex mb-3">
+      <form onSubmit={handleAdd} className="d-flex mb-3 gap-3">
         <input
           type="number"
           placeholder="Amount"
@@ -208,6 +208,14 @@ export default function Payments() {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
+
+         <input
+    type="date"
+    value={form.date || ""}
+    onChange={(e) => setForm({ ...form, date: e.target.value })}
+    className="form-control"
+    required
+  />
         <button type="submit" className="btn btn-success">
           Add
         </button>
