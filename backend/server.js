@@ -1,5 +1,61 @@
-require("dotenv").config();
+// require("dotenv").config();
 
+// const express = require("express");
+// const mongoose = require("mongoose");
+// const cors = require("cors");
+
+// const authRoutes = require("./routes/auth");
+// const adminRoutes = require("./routes/admin");
+// const expenseRoutes = require("./routes/expenses");
+// const invoiceRoutes = require("./routes/invoices");
+// const paymentRoutes = require("./routes/payments");
+// const reportRoutes = require("./routes/reports");
+// const ledgerRoutes = require("./routes/ledgers");
+// const dashboardRoutes = require("./routes/dashboard");
+
+
+// const {verifyToken, requireRole } = require("./middleware/auth");
+
+// const app = express();
+
+// app.use(cors());
+// app.use(express.json());
+
+// // Connect MongoDB
+// mongoose
+//   .connect(process.env.MONGO_URI)
+//   .then(() => console.log("✅ MongoDB connected successfully"))
+//   .catch((err) => {
+//     console.error("Mongo error:", err);
+//     process.exit(1); // stop app if DB connection fails
+//   });
+
+// // Public/auth routes
+// app.use("/api/auth", authRoutes);
+
+// // Protected routes for logged-in users
+// app.use("/api/expenses", verifyToken, expenseRoutes);
+// app.use("/api/payments", verifyToken, paymentRoutes);
+// app.use("/api/invoices", verifyToken, invoiceRoutes);
+// app.use("/api/ledger", verifyToken, ledgerRoutes);
+// app.use("/api/dashboard", dashboardRoutes);
+// app.use("/api/reports", verifyToken, reportRoutes); // All authenticated users can access their own reports
+
+
+
+// // Admin-only routes
+// app.use("/api/admin", verifyToken, requireRole("admin"), adminRoutes);
+
+// // Basic test route
+// app.get("/", (req, res) => {
+//   res.send("Server is running!");
+// });
+
+// const PORT = process.env.PORT || 4000;
+// app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
@@ -13,41 +69,33 @@ const reportRoutes = require("./routes/reports");
 const ledgerRoutes = require("./routes/ledgers");
 const dashboardRoutes = require("./routes/dashboard");
 
-
-const {verifyToken, requireRole } = require("./middleware/auth");
+const { verifyToken, requireRole } = require("./middleware/auth");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
 
-// Connect MongoDB
+// MongoDB
 mongoose
   .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ MongoDB connected successfully"))
-  .catch((err) => {
-    console.error("Mongo error:", err);
-    process.exit(1); // stop app if DB connection fails
-  });
+  .then(() => console.log("MongoDB Connected"))
+  .catch((err) => console.log(err));
 
-// Public/auth routes
+// Public
 app.use("/api/auth", authRoutes);
 
-// Protected routes for logged-in users
+// PROTECTED ROUTES
 app.use("/api/expenses", verifyToken, expenseRoutes);
 app.use("/api/payments", verifyToken, paymentRoutes);
 app.use("/api/invoices", verifyToken, invoiceRoutes);
 app.use("/api/ledger", verifyToken, ledgerRoutes);
-app.use("/api/dashboard", dashboardRoutes);
-app.use("/api/reports", verifyToken, reportRoutes); // All authenticated users can access their own reports
+app.use("/api/reports", verifyToken, reportRoutes);
 
-// Admin-only routes
+// DASHBOARD (IMPORTANT!!)
+app.use("/api/dashboard", verifyToken, dashboardRoutes);
+
+// ADMIN
 app.use("/api/admin", verifyToken, requireRole("admin"), adminRoutes);
 
-// Basic test route
-app.get("/", (req, res) => {
-  res.send("Server is running!");
-});
-
-const PORT = process.env.PORT || 4000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(4000, () => console.log("Server running on port 4000"));
