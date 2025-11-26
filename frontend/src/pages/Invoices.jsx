@@ -781,7 +781,7 @@ export default function Invoices() {
                       : "-"}
                   </td>
                   <td>
-                    <div className="btn-group btn-group-sm">
+                    <div className="btn-group btn-group-sm gap-2">
                       <button
                         className="btn btn-outline-primary"
                         onClick={() => handleEdit(inv)}

@@ -58,13 +58,27 @@ export default function Reports() {
       <h2>Monthly Report</h2>
 
       <div style={{ marginBottom: "20px" }}>
-        <input
-          type="number"
-          placeholder="Month (1-12)"
-          value={month}
-          onChange={(e) => setMonth(e.target.value)}
-          style={{ marginRight: "10px" }}
-        />
+       <select
+  value={month}
+  onChange={(e) => setMonth(e.target.value)}
+  style={{ marginRight: "10px" }}
+>
+  <option value="">Select Month</option>
+  <option value="1">January</option>
+  <option value="2">February</option>
+  <option value="3">March</option>
+  <option value="4">April</option>
+  <option value="5">May</option>
+  <option value="6">June</option>
+  <option value="7">July</option>
+  <option value="8">August</option>
+  <option value="9">September</option>
+  <option value="10">October</option>
+  <option value="11">November</option>
+  <option value="12">December</option>
+</select>
+
+        
         <input
           type="number"
           placeholder="Year (e.g. 2025)"
