@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import axios from "axios";
 import { API_BASE } from "../api";
 import jsPDF from "jspdf";
-import autoTable from "jspdf-autotable"; // ✅ updated import
+import autoTable from "jspdf-autotable"; 
 
 export default function Reports() {
   const [month, setMonth] = useState("");
